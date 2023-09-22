@@ -40,9 +40,9 @@ Usage
             Rotor types, their positions, notches, and ring settings
             Current plugboard connections
 
-        Encrypt/Decrypt message: Allows you to input a message that you want to encrypt or decrypt based on the current machine configuration. Non-alphabetical characters are removed from the input message.
+        5. Encrypt/Decrypt message: Allows you to input a message that you want to encrypt or decrypt based on the current machine configuration. Non-alphabetical characters are removed from the input message.
 
-        Quit: Exit the simulator.
+        6. Quit: Exit the simulator.
 
     In addition, there are sub-menus when you choose to modify the rotors or the plugboard:
     
