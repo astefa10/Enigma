@@ -1,50 +1,53 @@
 from typing import Any
 import utils
+import string
+
+ALPHABET = list(string.ascii_uppercase)
+ALPHABET_NUM = [x for x in range(26)]
+ROTOR_CONFIGS: dict[str,dict] = {
+    'I': {'notch':{ALPHABET.index('Q')}, 'pairings':dict(zip(ALPHABET_NUM, 'EKMFLGDQVZNTOWYHXUSPAIBRCJ'))},
+    'II': {'notch':{ALPHABET.index('E')}, 'pairings':dict(zip(ALPHABET_NUM, 'AJDKSIRUXBLHWTMCQGZNPYFVOE'))},
+    'III': {'notch':{ALPHABET.index('V')}, 'pairings':dict(zip(ALPHABET_NUM, 'BDFHJLCPRTXVZNYEIWGAKMUSQO'))},
+    'IV': {'notch':{ALPHABET.index('J')}, 'pairings':dict(zip(ALPHABET_NUM, 'ESOVPZJAYQUIRHXLNFTGKDCMWB'))},
+    'V': {'notch':{ALPHABET.index('Z')}, 'pairings':dict(zip(ALPHABET_NUM, 'VZBRGITYUPSDNHLXAWMJQOFECK'))},
+    'VI': {'notch':{ALPHABET.index('Z'), ALPHABET.index('M')}, 'pairings':dict(zip(ALPHABET_NUM, 'JPGVOUMFYQBENHZRDKASXLICTW'))},
+    'VII': {'notch':{ALPHABET.index('Z'), ALPHABET.index('M')}, 'pairings':dict(zip(ALPHABET_NUM, 'NZJHGRCXMYSWBOUFAIVLPEKQDT'))},
+    'VIII': {'notch':{ALPHABET.index('Z'), ALPHABET.index('M')}, 'pairings':dict(zip(ALPHABET_NUM, 'FKQHTLXOCBJSPDZRAMEWNIUYGV'))}
+}
 
 class Rotor:
-    available_rotor_types = ['I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII']
-    def __init__(self, rotor_type):
+    available_rotor_types = {'I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII'}
+
+    # Initialize a rotor with the given type
+    def __init__(self, rotor_type: str) -> None:
         self.pos = 0
         self.rotor_type = rotor_type.upper()
         self.ring_setting = 0
         
-        if rotor_type == "I":
-            self.notch = {utils.ALPHABET.index('Q')}
-            self.pairings =  dict(zip(utils.ALPHABET_NUM, 'EKMFLGDQVZNTOWYHXUSPAIBRCJ'))
-        elif rotor_type == "II":
-            self.notch = {utils.ALPHABET.index('E')}
-            self.pairings =  dict(zip(utils.ALPHABET_NUM, 'AJDKSIRUXBLHWTMCQGZNPYFVOE'))
-        elif rotor_type == "III":
-            self.notch = {utils.ALPHABET.index('V')}
-            self.pairings =  dict(zip(utils.ALPHABET_NUM, 'BDFHJLCPRTXVZNYEIWGAKMUSQO'))
-        elif rotor_type == "IV":
-            self.notch = {utils.ALPHABET.index('J')}
-            self.pairings =  dict(zip(utils.ALPHABET_NUM, 'ESOVPZJAYQUIRHXLNFTGKDCMWB'))
-        elif rotor_type == "V":
-            self.notch = {utils.ALPHABET.index('Z')}
-            self.pairings =  dict(zip(utils.ALPHABET_NUM, 'VZBRGITYUPSDNHLXAWMJQOFECK'))
-        elif rotor_type == "VI":
-            self.notch = {utils.ALPHABET.index('Z'), utils.ALPHABET.index('M')}
-            self.pairings =  dict(zip(utils.ALPHABET_NUM, 'JPGVOUMFYQBENHZRDKASXLICTW'))
-        elif rotor_type == "VII":
-            self.notch = {utils.ALPHABET.index('Z'), utils.ALPHABET.index('M')}
-            self.pairings =  dict(zip(utils.ALPHABET_NUM, 'NZJHGRCXMYSWBOUFAIVLPEKQDT'))
-        elif rotor_type == "VIII":
-            self.notch = {utils.ALPHABET.index('Z'), utils.ALPHABET.index('M')}
-            self.pairings =  dict(zip(utils.ALPHABET_NUM, 'FKQHTLXOCBJSPDZRAMEWNIUYGV'))
+        if self.rotor_type in ROTOR_CONFIGS:
+            self.notch = ROTOR_CONFIGS[self.rotor_type]['notch']
+            self.pairings = ROTOR_CONFIGS[self.rotor_type]['pairings']
         else:
-            raise ValueError("Invalid rotor type")
+            raise ValueError(f"Invalid rotor type: {self.rotor_type}")
         
-        self.available_rotor_types.remove(rotor_type)
+        self.available_rotor_types.remove(self.rotor_type)
+
         
-    def rotate(self):      
+    # Rotate the rotor by one position
+    def rotate(self) -> bool:      
         turnover = False  
-        if self.notch == (self.pos + self.ring_setting) % len(self.pairings):
+        current_position = (self.pos + self.ring_setting) % len(self.pairings)
+        if current_position in self.notch:
             turnover = True
         self.pos = (self.pos + 1) % len(self.pairings)
         return turnover
+    
+    # Adjusts the given index based on the rotor's current position and ring setting, accounting for the direction of mapping (forward or backward).
+    def _adjust_index(self, index: int, is_forward: bool) -> int:
+        return (index + self.pos - self.ring_setting) if is_forward else (index - self.pos + self.ring_setting)
 
-    def forward_map(self, letter):
+    # Map the letter in the forward direction through the rotor
+    def forward_map(self, letter: str) -> str:
         index = utils.ALPHABET.index(letter)
         offset_index = (index + self.pos - self.ring_setting) % len(self.pairings)
         mapped_letter = self.pairings[offset_index]
@@ -55,7 +58,8 @@ class Rotor:
 
         return encrypted_letter
            
-    def backward_map(self, letter):
+    # Map the letter in the backward direction through the rotor
+    def backward_map(self, letter: str) -> str:
         index = utils.ALPHABET.index(letter)
         mapped_index = (index + self.pos - self.ring_setting) % len(utils.ALPHABET)
         mapped_letter = utils.ALPHABET[mapped_index]
@@ -71,8 +75,10 @@ class Rotor:
 
         return encrypted_letter
 
-    def change_position(self, pos):
+    # Change the rotor position
+    def change_position(self, pos: int) -> None:
         self.pos = pos
 
-    def change_ring_setting(self, ring_setting):
+    # Change the ring setting
+    def change_ring_setting(self, ring_setting: int) -> None:
         self.ring_setting = ring_setting
