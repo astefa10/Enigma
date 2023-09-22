@@ -4,10 +4,10 @@ Enigma Machine Simulator
 This Python project simulates the operation of the Enigma machine, a famous encryption device used during World War II. The simulator allows users to encrypt and decrypt messages using various configurations of the Enigma machine.
 Features
 
-    Multiple Rotors and Reflectors: The simulator supports multiple types of rotors (I to VIII) and reflectors (A, B, C, B THIN, C THIN).
-    Plugboard Functionality: Users can establish connections between letters on the plugboard to further modify the encryption.
-    Interactive Menus: The program provides interactive menus for selecting reflector types, rotor types, and modifying plugboard connections.
-    Machine State: View the current state of the machine, including the rotor types, positions, notches, ring settings, and plugboard pairings.
+Multiple Rotors and Reflectors: The simulator supports multiple types of rotors (I to VIII) and reflectors (A, B, C, B THIN, C THIN).
+Plugboard Functionality: Users can establish connections between letters on the plugboard to further modify the encryption.
+Interactive Menus: The program provides interactive menus for selecting reflector types, rotor types, and modifying plugboard connections.
+Machine State: View the current state of the machine, including the rotor types, positions, notches, ring settings, and plugboard pairings.
 
 Files
 
